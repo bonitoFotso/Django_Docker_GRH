@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+
+############################
+### Mongo Database Container
+############################
+  mongo_GRH:
+    image: mongo
+    container_name: mongo_GRH
+    ports:
+      - "27017:27017"
+    restart: always
+    env_file: .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=${MONGO_DB_NAME}
+      - MONGO_INITDB_USERNAME=${MONGO_DB_USERNAME}
+      - MONGO_INITDB_PASSWORD=${MONGO_DB_PASSWORD}
+    volumes:
+      - ${PWD}/_data/mongo:/data/db
+      - ${PWD}/docker/_mongo/fixtures:/import
+      - ${PWD}/docker/_mongo/scripts/init.sh:/docker-entrypoint-initdb.d/setup.sh
+
+############################
+### Postgres Database Container
+############################ 
+  postgres_GRH:
+    container_name: postgres_GRH
+    image: postgres:12
+    restart: always
+    env_file: .env
+    environment:
+      - POSTGRES_DB=app_db
+      - POSTGRES_USER=app_db_user
+      - POSTGRES_PASSWORD=password
+      - POSTGREST_PORT=5432
+    ports:
+      - 5432:5432
+    volumes:
+      - ${PWD}/_data/postgres:/var/lib/postgresql/data
+      - ${PWD}/docker/_postgres/scripts/create_test_db.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+
+############################
+### Django App Container
+############################
+  BF_GRH:
+    build: ./BF_GRH
+    image: app:latest
+    container_name: app_GRH
+    restart: always
+    command: "python manage.py runserver 0.0.0.0:8000"
+    env_file: .env
+    volumes:
+      - ${PWD}/BF_GRH:/app
+    ports:
+      - 8888:8000
+    depends_on:
+      - postgres_GRH
+
+networks:
+  BF_GRH_net:

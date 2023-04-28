@@ -1,0 +1,72 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href=" {% static 'css/journal/j.css' %} ">
+{% endblock css %}
+
+{% block title %}
+    journal
+{% endblock title %}
+
+{% block content %}
+    
+<form action=" {% url 'journal' %} " method="post">
+    {% csrf_token %}
+    <div class="inp">
+        <div class="h">
+            <h1>TRANSACTION</h1>
+        </div>
+            <div class="c">
+                <div class="type">
+                    <span>type</span>
+                    <select name="chx" id="chx">
+                        <optgroup value="Revenue">Revenue</optgroup>
+                            {% for i in c %}
+                            <option value="{{i.1}}">{{i.1}}</option>
+                        {% endfor %}
+                        <optgroup value="Depense">Depense</optgroup>
+                    </select>
+                </div>
+                <div class="nom">
+                    <span>nom</span>
+                    <select name="chx_n" id="chx_n">
+                        
+                        {% for i in c %}
+
+                            <option value="{{i.1}}">{{i.1}}</option>
+                        {% endfor %}
+                            
+                    </select>
+                </div>
+                <div class="date">
+                    <span>date</span>
+                    <input type="date" name="date" id="date">
+                </div>
+                <div class="montant">
+                    <span>montant</span>
+                    <input type="text" name="montant" id="montant">
+                </div>
+            </div>
+    </div>
+    <div class="btn">
+        <input type="reset" value="effacer">
+        <input type="submit" value="ok">
+
+    </div>
+    <div class="bal">
+        <table class="tab">
+            <tr>
+                <th>Revenue</th>
+                <th>Depense</th>
+            </tr>
+            <tr>
+                <td>rev</td>
+                <td>dep</td>
+            </tr>
+        </table>
+    </div>
+
+</form>
+
+
+{% endblock content %}
